@@ -41,9 +41,9 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="p-2 rounded-lg bg-primary">
-              <Megaphone className="h-6 w-6 text-primary-foreground" />
+          <div className="flex flex-col items-center justify-center gap-2 mb-2">
+            <div className="p-3 rounded-full bg-primary shadow-sm">
+              <Megaphone className="h-7 w-7 text-primary-foreground" />
             </div>
             <CardTitle className="text-2xl font-bold">Perifoneo</CardTitle>
           </div>
@@ -76,7 +76,8 @@ export default function Auth() {
                 minLength={6}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full gap-2" disabled={loading}>
+              <Megaphone className="h-4 w-4" />
               {loading ? "Cargando..." : isLogin ? "Iniciar sesión" : "Crear cuenta"}
             </Button>
           </form>

@@ -62,7 +62,21 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Option 1: Lovable publish
+
+Open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+
+### Option 2: Vercel (recommended for automatic deploys)
+
+This project already includes `vercel.json` with Vite build settings and SPA rewrites.
+
+1. Push this repository to GitHub.
+2. In Vercel, click **Add New Project** and import the GitHub repo.
+3. Keep default settings (Vercel will use `vercel.json`).
+4. Add your environment variables from `.env` in Vercel Project Settings -> Environment Variables.
+5. Deploy.
+
+After that, every push to your main branch will trigger an automatic deployment.
 
 ## Can I connect a custom domain to my Lovable project?
 
