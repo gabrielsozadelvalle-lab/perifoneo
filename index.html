@@ -1,31 +1,1363 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Perifoneo</title>
-    <meta name="description" content="Un sitio mas de Gabanto.com">
-    <meta name="author" content="Lovable" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERP Base - Tu Negocio</title>
+  <style>
+    :root{
+      --panel:#111827;
+      --card:#1f2937;
+      --muted:#94a3b8;
+      --text:#e5e7eb;
+      --primary:#2563eb;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warn:#f59e0b;
+      --border:#334155;
+      --bg1:#0b1222;
+      --bg2:#111827;
+    }
 
-    <!-- TODO: Update og:title to match your application name -->
-    
-    
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/YPIeuO1ZhNQVM2DtdFqKP1jWDg53/social-images/social-1777351821423-imagen_2026-04-27_225021196.webp">
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(120deg,var(--bg1),var(--bg2) 45%,var(--bg1));
+      color:var(--text);
+      min-height:100vh;
+    }
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/YPIeuO1ZhNQVM2DtdFqKP1jWDg53/social-images/social-1777351821423-imagen_2026-04-27_225021196.webp">
-    <meta property="og:title" content="Perifoneo">
-  <meta name="twitter:title" content="Perifoneo">
-  <meta property="og:description" content="Un sitio mas de Gabanto.com">
-  <meta name="twitter:description" content="Un sitio mas de Gabanto.com">
+    .app{width:100%;padding:10px;min-height:100vh}
+    .hidden{display:none !important}
+    .muted{color:var(--muted)}
+    .stack{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+    .btn{
+      border:0;border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:700;color:#fff
+    }
+    .btn-sm{padding:7px 10px;font-size:.82rem;border-radius:8px}
+    .btn-primary{background:var(--primary);width:100%}
+    .btn-success{background:var(--success)}
+    .btn-danger{background:var(--danger)}
+    .btn-warn{background:var(--warn);color:#111827}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:#cbd5e1}
+
+    .label{display:block;font-size:.85rem;color:#cbd5e1;margin-bottom:5px}
+    .input{
+      width:100%;border:1px solid var(--border);background:#0b1222;color:var(--text);
+      padding:10px;border-radius:10px;outline:none
+    }
+
+    .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+
+    .panel{
+      background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;
+      overflow:auto;margin-bottom:12px
+    }
+
+    table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.92rem;min-width:760px}
+    th,td{border-bottom:1px solid var(--border);text-align:left;padding:8px;white-space:nowrap}
+    th{color:#cbd5e1}
+
+    .badge{
+      display:inline-block;padding:4px 8px;border-radius:999px;font-size:.75rem;font-weight:700
+    }
+    .ok{background:rgba(22,163,74,.2);color:#86efac}
+    .warn{background:rgba(245,158,11,.2);color:#fde68a}
+    .bad{background:rgba(220,38,38,.18);color:#fecaca}
+
+    /* LOGIN */
+    .login-wrap{
+      min-height:calc(100vh - 20px);display:flex;align-items:center;justify-content:center
+    }
+    .login-card{
+      width:100%;max-width:420px;background:var(--panel);border:1px solid var(--border);
+      border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.35)
+    }
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:14px;justify-content:center}
+    .brand-icon{
+      width:38px;height:38px;border-radius:50%;background:var(--primary);
+      display:grid;place-items:center;font-size:18px
+    }
+
+    /* ERP */
+    .erp{
+      display:grid;grid-template-columns:260px 1fr;gap:12px;min-height:calc(100vh - 20px);position:relative
+    }
+
+    .sidebar{
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;
+      padding:14px;display:flex;flex-direction:column;z-index:30
+    }
+
+    .menu-title{font-size:.9rem;color:var(--muted);margin:8px 0 6px}
+    .menu{display:flex;flex-direction:column;gap:6px}
+    .menu button{
+      width:100%;text-align:left;background:#0b1222;border:1px solid var(--border);
+      color:var(--text);padding:10px;border-radius:10px;cursor:pointer;font-size:.92rem
+    }
+    .menu button.active{border-color:var(--primary);background:#0f1c3f}
+
+    .main{
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;overflow:hidden
+    }
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px
+    }
+    .topbar-left{display:flex;align-items:center;gap:8px}
+    .menu-toggle{
+      display:none;border:1px solid var(--border);background:#0b1222;color:#fff;border-radius:10px;
+      width:40px;height:40px;cursor:pointer;font-size:18px
+    }
+
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+    .card{
+      background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;min-width:0
+    }
+    .card small{color:var(--muted)}
+    .card strong{display:block;font-size:1.1rem;margin-top:6px;word-break:break-word}
+
+    .section{display:none}
+    .section.active{display:block}
+
+    .overlay{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20
+    }
+    .overlay.show{display:block}
+
+    @media (max-width:1024px){
+      .cards,.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .grid-2,.grid-3{grid-template-columns:1fr}
+    }
+    @media (max-width:768px){
+      .app{padding:8px}
+      .erp{grid-template-columns:1fr;gap:8px}
+      .menu-toggle{display:inline-grid;place-items:center}
+      .sidebar{
+        position:fixed;top:0;left:0;height:100vh;width:82%;max-width:320px;border-radius:0 14px 14px 0;
+        transform:translateX(-105%);transition:transform .22s ease;padding-top:16px
+      }
+      .sidebar.open{transform:translateX(0)}
+      .main{padding:12px;min-height:calc(100vh - 16px)}
+      .cards,.grid-4{grid-template-columns:1fr}
+      .login-card{padding:16px}
+    }
+  </style>
 </head>
+<body>
+  <div class="app">
+    <!-- LOGIN -->
+    <section id="loginView" class="login-wrap">
+      <div class="login-card">
+        <div class="brand">
+          <div class="brand-icon">📣</div>
+          <h1 style="margin:.3rem 0">ERP Negocios</h1>
+        </div>
+        <p class="muted">Acceso administrativo</p>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        <div style="margin-bottom:10px">
+          <label class="label" for="email">Correo</label>
+          <input id="email" class="input" type="email" placeholder="admin@tuempresa.com" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="label" for="password">Contraseña</label>
+          <input id="password" class="input" type="password" placeholder="********" />
+        </div>
+
+        <button class="btn btn-primary" id="btnLogin">Entrar al sistema</button>
+        <p class="muted" style="font-size:.82rem;text-align:center;margin-top:8px">Demo local: cualquier correo + clave de 4+ caracteres</p>
+      </div>
+    </section>
+
+    <!-- ERP -->
+    <section id="erpView" class="erp hidden">
+      <div id="mobileOverlay" class="overlay"></div>
+
+      <aside id="sidebar" class="sidebar">
+        <div class="brand" style="justify-content:flex-start;margin-bottom:10px">
+          <div class="brand-icon">📣</div>
+          <div>
+            <strong>ERP Negocios</strong><br />
+            <small class="muted">v0.4 CRUD + monedas</small>
+          </div>
+        </div>
+
+        <div class="menu-title">Módulos</div>
+        <nav class="menu">
+          <button class="active" data-section="dashboard">Dashboard</button>
+          <button data-section="clientes">Clientes</button>
+          <button data-section="ventas">Ventas</button>
+          <button data-section="inventario">Inventario</button>
+          <button data-section="compras">Compras</button>
+          <button data-section="reportes">Reportes</button>
+          <button data-section="usuarios">Usuarios</button>
+        </nav>
+
+        <div style="margin-top:12px">
+          <button class="btn btn-ghost" id="btnLogout" style="width:100%">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div class="topbar-left">
+            <button id="menuToggle" class="menu-toggle" aria-label="Abrir menú">☰</button>
+            <h2 id="sectionTitle" style="margin:0">Dashboard</h2>
+          </div>
+          <small id="userInfo" class="muted" style="word-break:break-all">Usuario: Admin</small>
+        </div>
+
+        <!-- DASHBOARD -->
+        <section id="section-dashboard" class="section active">
+          <div class="cards">
+            <div class="card"><small>Clientes activos</small><strong id="kpiClientes">0</strong></div>
+            <div class="card"><small>Ventas registradas</small><strong id="kpiVentas">0</strong></div>
+            <div class="card"><small>Total ventas C$</small><strong id="kpiVentasNIO">C$ 0.00</strong></div>
+            <div class="card"><small>Total ventas $</small><strong id="kpiVentasUSD">$ 0.00</strong></div>
+          </div>
+
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Últimas ventas</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Folio</th>
+                  <th>Cliente</th>
+                  <th>Fecha</th>
+                  <th>Moneda</th>
+                  <th>Total</th>
+                  <th>Estatus</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardVentasBody">
+                <tr><td colspan="6" class="muted">Sin ventas registradas.</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- CLIENTES -->
+        <section id="section-clientes" class="section">
+          <section class="panel">
+            <h3 style="margin:0 0 10px">Clientes</h3>
+            <div class="grid-3">
+              <div>
+                <label class="label">Nombre *</label>
+                <input id="clienteNombre" class="input" placeholder="Ej. Tienda Central" />
+              </div>
+              <div>
+                <label class="label">Teléfono</label>
+                <input id="clienteTelefono" class="input" placeholder="+505 8888 8888" />
+              </div>
+              <div>
+                <label class="label">Correo</label>
+                <input id="clienteCorreo" class="input" placeholder="cliente@correo.com" />
+              </div>
+              <div>
+                <label class="label">Ciudad</label>
+                <input id="clienteCiudad" class="input" placeholder="Managua" />
+              </div>
+              <div>
+                <label class="label">Estatus</label>
+                <select id="clienteEstatus" class="input">
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
+                </select>
+              </div>
+              <div>
+                <label class="label">Buscar</label>
+                <input id="clienteBuscar" class="input" placeholder="Nombre, correo, ciudad..." />
+              </div>
+            </div>
+            <div class="stack" style="margin-top:10px">
+              <button id="btnGuardarCliente" class="btn btn-success btn-sm">Guardar cliente</button>
+              <button id="btnLimpiarCliente" class="btn btn-ghost btn-sm">Limpiar</button>
+              <small id="clienteModo" class="muted">Modo: Crear</small>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Listado</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Ciudad</th><th>Estatus</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="clientesBody">
+                <tr><td colspan="7" class="muted">Sin clientes.</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- VENTAS -->
+        <section id="section-ventas" class="section">
+          <section class="panel">
+            <h3 style="margin:0 0 10px">Ventas</h3>
+            <div class="grid-4">
+              <div>
+                <label class="label">Cliente *</label>
+                <select id="ventaClienteId" class="input"></select>
+              </div>
+              <div>
+                <label class="label">Fecha *</label>
+                <input id="ventaFecha" class="input" type="date" />
+              </div>
+              <div>
+                <label class="label">Concepto *</label>
+                <input id="ventaConcepto" class="input" placeholder="Servicio / Producto" />
+              </div>
+              <div>
+                <label class="label">Moneda</label>
+                <select id="ventaMoneda" class="input">
+                  <option value="NIO">C$ (Córdobas)</option>
+                  <option value="USD">$ (Dólares)</option>
+                </select>
+              </div>
+              <div>
+                <label class="label">Total *</label>
+                <input id="ventaTotal" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+              <div>
+                <label class="label">Estatus</label>
+                <select id="ventaEstatus" class="input">
+                  <option value="Pagada">Pagada</option>
+                  <option value="Pendiente">Pendiente</option>
+                </select>
+              </div>
+              <div style="grid-column: span 2">
+                <label class="label">Buscar</label>
+                <input id="ventaBuscar" class="input" placeholder="Folio, cliente, concepto..." />
+              </div>
+            </div>
+            <div class="stack" style="margin-top:10px">
+              <button id="btnGuardarVenta" class="btn btn-success btn-sm">Guardar venta</button>
+              <button id="btnLimpiarVenta" class="btn btn-ghost btn-sm">Limpiar</button>
+              <small id="ventaModo" class="muted">Modo: Crear</small>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Listado de ventas</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Folio</th><th>Cliente</th><th>Fecha</th><th>Concepto</th><th>Moneda</th><th>Total</th><th>Estatus</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="ventasBody">
+                <tr><td colspan="8" class="muted">Sin ventas.</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- INVENTARIO -->
+        <section id="section-inventario" class="section">
+          <section class="panel">
+            <h3 style="margin:0 0 10px">Inventario</h3>
+            <div class="grid-4">
+              <div>
+                <label class="label">Nombre producto *</label>
+                <input id="invNombre" class="input" placeholder="Ej. Bocina portátil" />
+              </div>
+              <div>
+                <label class="label">SKU</label>
+                <input id="invSku" class="input" placeholder="SKU-001" />
+              </div>
+              <div>
+                <label class="label">Stock *</label>
+                <input id="invStock" class="input" type="number" min="0" placeholder="0" />
+              </div>
+              <div>
+                <label class="label">Costo unitario *</label>
+                <input id="invCosto" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+              <div>
+                <label class="label">Moneda costo</label>
+                <select id="invMoneda" class="input">
+                  <option value="NIO">C$ (Córdobas)</option>
+                  <option value="USD">$ (Dólares)</option>
+                </select>
+              </div>
+              <div style="grid-column: span 3">
+                <label class="label">Buscar</label>
+                <input id="invBuscar" class="input" placeholder="Nombre, SKU..." />
+              </div>
+            </div>
+            <div class="stack" style="margin-top:10px">
+              <button id="btnGuardarInv" class="btn btn-success btn-sm">Guardar producto</button>
+              <button id="btnLimpiarInv" class="btn btn-ghost btn-sm">Limpiar</button>
+              <small id="invModo" class="muted">Modo: Crear</small>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Listado de inventario</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th><th>SKU</th><th>Producto</th><th>Stock</th><th>Moneda</th><th>Costo</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="inventarioBody">
+                <tr><td colspan="7" class="muted">Sin productos.</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- COMPRAS -->
+        <section id="section-compras" class="section">
+          <section class="panel">
+            <h3 style="margin:0 0 10px">Compras</h3>
+            <div class="grid-4">
+              <div>
+                <label class="label">Proveedor *</label>
+                <input id="compProveedor" class="input" placeholder="Proveedor S.A." />
+              </div>
+              <div>
+                <label class="label">Producto *</label>
+                <select id="compProductoId" class="input"></select>
+              </div>
+              <div>
+                <label class="label">Fecha *</label>
+                <input id="compFecha" class="input" type="date" />
+              </div>
+              <div>
+                <label class="label">Moneda</label>
+                <select id="compMoneda" class="input">
+                  <option value="NIO">C$ (Córdobas)</option>
+                  <option value="USD">$ (Dólares)</option>
+                </select>
+              </div>
+              <div>
+                <label class="label">Cantidad *</label>
+                <input id="compCantidad" class="input" type="number" min="1" placeholder="1" />
+              </div>
+              <div>
+                <label class="label">Costo unitario *</label>
+                <input id="compCostoUnit" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+              <div>
+                <label class="label">Aplicar a stock</label>
+                <select id="compAplicarStock" class="input">
+                  <option value="si">Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div>
+                <label class="label">Buscar</label>
+                <input id="compBuscar" class="input" placeholder="Folio, proveedor..." />
+              </div>
+            </div>
+            <div class="stack" style="margin-top:10px">
+              <button id="btnGuardarComp" class="btn btn-success btn-sm">Guardar compra</button>
+              <button id="btnLimpiarComp" class="btn btn-ghost btn-sm">Limpiar</button>
+              <small id="compModo" class="muted">Modo: Crear</small>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Listado de compras</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Folio</th><th>Proveedor</th><th>Producto</th><th>Fecha</th><th>Cant.</th><th>Moneda</th><th>Total</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="comprasBody">
+                <tr><td colspan="8" class="muted">Sin compras.</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- REPORTES -->
+        <section id="section-reportes" class="section">
+          <section class="panel">
+            <h3 style="margin:0 0 10px">Reportes</h3>
+            <div class="grid-3">
+              <div>
+                <label class="label">Desde</label>
+                <input id="repDesde" class="input" type="date" />
+              </div>
+              <div>
+                <label class="label">Hasta</label>
+                <input id="repHasta" class="input" type="date" />
+              </div>
+              <div class="stack" style="align-items:flex-end">
+                <button id="btnAplicarReporte" class="btn btn-primary btn-sm" style="width:auto">Aplicar filtro</button>
+                <button id="btnResetReporte" class="btn btn-ghost btn-sm">Limpiar</button>
+              </div>
+            </div>
+          </section>
+
+          <div class="cards">
+            <div class="card"><small>Clientes activos</small><strong id="repClientesActivos">0</strong></div>
+            <div class="card"><small>Ventas pagadas</small><strong id="repVentasPagadas">0</strong></div>
+            <div class="card"><small>Total ventas C$</small><strong id="repTotalNIO">C$ 0.00</strong></div>
+            <div class="card"><small>Total ventas $</small><strong id="repTotalUSD">$ 0.00</strong></div>
+          </div>
+
+          <div class="cards">
+            <div class="card"><small>Compras registradas</small><strong id="repComprasCount">0</strong></div>
+            <div class="card"><small>Total compras C$</small><strong id="repComprasNIO">C$ 0.00</strong></div>
+            <div class="card"><small>Total compras $</small><strong id="repComprasUSD">$ 0.00</strong></div>
+            <div class="card"><small>Ventas pendientes</small><strong id="repVentasPendientes">0</strong></div>
+          </div>
+        </section>
+
+        <!-- USUARIOS -->
+        <section id="section-usuarios" class="section">
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Usuarios (base)</h3>
+            <p class="muted">Módulo habilitado. Siguiente paso: roles/permisos y usuarios reales con backend.</p>
+          </section>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script>
+    // ----------------------------
+    // Constantes / storage
+    // ----------------------------
+    const KEYS = {
+      USER: "erp_user",
+      CLIENTES: "erp_clientes",
+      VENTAS: "erp_ventas",
+      INV: "erp_inventario",
+      COMPRAS: "erp_compras"
+    };
+
+    const CURRENCY = {
+      NIO: "C$",
+      USD: "$"
+    };
+
+    function readStorage(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function writeStorage(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function todayISO() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function money(v, currency = "NIO") {
+      const n = Number(v || 0);
+      const prefix = CURRENCY[currency] || "C$";
+      return `${prefix} ${n.toLocaleString("es-NI", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function esc(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    // ----------------------------
+    // Estado
+    // ----------------------------
+    let clientes = readStorage(KEYS.CLIENTES, []);
+    let ventas = readStorage(KEYS.VENTAS, []);
+    let inventario = readStorage(KEYS.INV, []);
+    let compras = readStorage(KEYS.COMPRAS, []);
+
+    let editClienteId = null;
+    let editVentaId = null;
+    let editInvId = null;
+    let editCompraId = null;
+
+    // ----------------------------
+    // Seed demo
+    // ----------------------------
+    (function seedIfEmpty(){
+      if (!clientes.length) {
+        clientes = [
+          { id:"C-001", nombre:"Comercial Delta", telefono:"8888-0001", correo:"ventas@delta.com", ciudad:"Managua", estatus:"Activo" },
+          { id:"C-002", nombre:"Tienda Luna", telefono:"8888-0002", correo:"compras@luna.com", ciudad:"León", estatus:"Activo" }
+        ];
+      }
+      if (!inventario.length) {
+        inventario = [
+          { id:"P-001", sku:"SKU-001", nombre:"Bocina portátil", stock:20, costo:45, moneda:"USD" },
+          { id:"P-002", sku:"SKU-002", nombre:"Micrófono", stock:50, costo:750, moneda:"NIO" }
+        ];
+      }
+      if (!ventas.length) {
+        ventas = [
+          { id:"V-1001", clienteId:"C-001", fecha:todayISO(), concepto:"Campaña perifoneo", moneda:"NIO", total:2500, estatus:"Pagada" },
+          { id:"V-1002", clienteId:"C-002", fecha:todayISO(), concepto:"Promoción local", moneda:"USD", total:120, estatus:"Pendiente" }
+        ];
+      }
+      if (!compras.length) {
+        compras = [
+          { id:"CP-001", proveedor:"Proveedor Norte", productoId:"P-002", fecha:todayISO(), cantidad:10, moneda:"NIO", costoUnit:700, total:7000, aplicarStock:"no" }
+        ];
+      }
+      persistAll();
+    })();
+
+    function persistAll() {
+      writeStorage(KEYS.CLIENTES, clientes);
+      writeStorage(KEYS.VENTAS, ventas);
+      writeStorage(KEYS.INV, inventario);
+      writeStorage(KEYS.COMPRAS, compras);
+    }
+
+    // ----------------------------
+    // Referencias DOM
+    // ----------------------------
+    const loginView = document.getElementById("loginView");
+    const erpView = document.getElementById("erpView");
+    const btnLogin = document.getElementById("btnLogin");
+    const btnLogout = document.getElementById("btnLogout");
+    const userInfo = document.getElementById("userInfo");
+
+    const sidebar = document.getElementById("sidebar");
+    const menuToggle = document.getElementById("menuToggle");
+    const mobileOverlay = document.getElementById("mobileOverlay");
+    const sectionTitle = document.getElementById("sectionTitle");
+    const menuButtons = document.querySelectorAll(".menu button[data-section]");
+    const sections = document.querySelectorAll(".section");
+
+    // Dashboard
+    const kpiClientes = document.getElementById("kpiClientes");
+    const kpiVentas = document.getElementById("kpiVentas");
+    const kpiVentasNIO = document.getElementById("kpiVentasNIO");
+    const kpiVentasUSD = document.getElementById("kpiVentasUSD");
+    const dashboardVentasBody = document.getElementById("dashboardVentasBody");
+
+    // Clientes
+    const clienteNombre = document.getElementById("clienteNombre");
+    const clienteTelefono = document.getElementById("clienteTelefono");
+    const clienteCorreo = document.getElementById("clienteCorreo");
+    const clienteCiudad = document.getElementById("clienteCiudad");
+    const clienteEstatus = document.getElementById("clienteEstatus");
+    const clienteBuscar = document.getElementById("clienteBuscar");
+    const btnGuardarCliente = document.getElementById("btnGuardarCliente");
+    const btnLimpiarCliente = document.getElementById("btnLimpiarCliente");
+    const clienteModo = document.getElementById("clienteModo");
+    const clientesBody = document.getElementById("clientesBody");
+
+    // Ventas
+    const ventaClienteId = document.getElementById("ventaClienteId");
+    const ventaFecha = document.getElementById("ventaFecha");
+    const ventaConcepto = document.getElementById("ventaConcepto");
+    const ventaMoneda = document.getElementById("ventaMoneda");
+    const ventaTotal = document.getElementById("ventaTotal");
+    const ventaEstatus = document.getElementById("ventaEstatus");
+    const ventaBuscar = document.getElementById("ventaBuscar");
+    const btnGuardarVenta = document.getElementById("btnGuardarVenta");
+    const btnLimpiarVenta = document.getElementById("btnLimpiarVenta");
+    const ventaModo = document.getElementById("ventaModo");
+    const ventasBody = document.getElementById("ventasBody");
+
+    // Inventario
+    const invNombre = document.getElementById("invNombre");
+    const invSku = document.getElementById("invSku");
+    const invStock = document.getElementById("invStock");
+    const invCosto = document.getElementById("invCosto");
+    const invMoneda = document.getElementById("invMoneda");
+    const invBuscar = document.getElementById("invBuscar");
+    const btnGuardarInv = document.getElementById("btnGuardarInv");
+    const btnLimpiarInv = document.getElementById("btnLimpiarInv");
+    const invModo = document.getElementById("invModo");
+    const inventarioBody = document.getElementById("inventarioBody");
+
+    // Compras
+    const compProveedor = document.getElementById("compProveedor");
+    const compProductoId = document.getElementById("compProductoId");
+    const compFecha = document.getElementById("compFecha");
+    const compMoneda = document.getElementById("compMoneda");
+    const compCantidad = document.getElementById("compCantidad");
+    const compCostoUnit = document.getElementById("compCostoUnit");
+    const compAplicarStock = document.getElementById("compAplicarStock");
+    const compBuscar = document.getElementById("compBuscar");
+    const btnGuardarComp = document.getElementById("btnGuardarComp");
+    const btnLimpiarComp = document.getElementById("btnLimpiarComp");
+    const compModo = document.getElementById("compModo");
+    const comprasBody = document.getElementById("comprasBody");
+
+    // Reportes
+    const repDesde = document.getElementById("repDesde");
+    const repHasta = document.getElementById("repHasta");
+    const btnAplicarReporte = document.getElementById("btnAplicarReporte");
+    const btnResetReporte = document.getElementById("btnResetReporte");
+    const repClientesActivos = document.getElementById("repClientesActivos");
+    const repVentasPagadas = document.getElementById("repVentasPagadas");
+    const repTotalNIO = document.getElementById("repTotalNIO");
+    const repTotalUSD = document.getElementById("repTotalUSD");
+    const repComprasCount = document.getElementById("repComprasCount");
+    const repComprasNIO = document.getElementById("repComprasNIO");
+    const repComprasUSD = document.getElementById("repComprasUSD");
+    const repVentasPendientes = document.getElementById("repVentasPendientes");
+
+    // ----------------------------
+    // Auth / nav
+    // ----------------------------
+    const savedUser = localStorage.getItem(KEYS.USER);
+    if (savedUser) showERP(savedUser);
+
+    btnLogin.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!email || password.length < 4) return alert("Ingresa correo y contraseña válida (mín. 4).");
+      localStorage.setItem(KEYS.USER, email);
+      showERP(email);
+    });
+
+    btnLogout.addEventListener("click", () => {
+      localStorage.removeItem(KEYS.USER);
+      erpView.classList.add("hidden");
+      loginView.classList.remove("hidden");
+      closeMobileMenu();
+    });
+
+    menuToggle.addEventListener("click", () => {
+      if (sidebar.classList.contains("open")) closeMobileMenu();
+      else openMobileMenu();
+    });
+    mobileOverlay.addEventListener("click", closeMobileMenu);
+
+    menuButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-section");
+        activateSection(key, btn.textContent.trim());
+        menuButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        closeMobileMenu(); // cerrar al seleccionar en móvil
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768) closeMobileMenu();
+    });
+
+    function showERP(email){
+      loginView.classList.add("hidden");
+      erpView.classList.remove("hidden");
+      userInfo.textContent = "Usuario: " + email;
+      renderAll();
+    }
+
+    function activateSection(key,title){
+      sections.forEach(s => s.classList.remove("active"));
+      const sec = document.getElementById("section-" + key);
+      if (sec) sec.classList.add("active");
+      sectionTitle.textContent = title || "Dashboard";
+    }
+
+    function openMobileMenu(){
+      if (window.innerWidth <= 768){
+        sidebar.classList.add("open");
+        mobileOverlay.classList.add("show");
+      }
+    }
+
+    function closeMobileMenu(){
+      sidebar.classList.remove("open");
+      mobileOverlay.classList.remove("show");
+    }
+
+    // ----------------------------
+    // IDs / helpers
+    // ----------------------------
+    function nextId(prefix, list, start = 1) {
+      const nums = list
+        .map(x => Number(String(x.id).replace(prefix, "")))
+        .filter(n => !Number.isNaN(n));
+      const n = (nums.length ? Math.max(...nums) : (start - 1)) + 1;
+      return prefix + String(n).padStart(3, "0");
+    }
+
+    function clienteNameById(id){
+      const c = clientes.find(x => x.id === id);
+      return c ? c.nombre : "Cliente no encontrado";
+    }
+
+    function productNameById(id){
+      const p = inventario.find(x => x.id === id);
+      return p ? p.nombre : "Producto no encontrado";
+    }
+
+    function inDateRange(dateStr, from, to){
+      if (!from && !to) return true;
+      const d = new Date(dateStr + "T00:00:00");
+      if (from) {
+        const f = new Date(from + "T00:00:00");
+        if (d < f) return false;
+      }
+      if (to) {
+        const t = new Date(to + "T23:59:59");
+        if (d > t) return false;
+      }
+      return true;
+    }
+
+    // ----------------------------
+    // CLIENTES CRUD
+    // ----------------------------
+    btnGuardarCliente.addEventListener("click", () => {
+      const data = {
+        nombre: clienteNombre.value.trim(),
+        telefono: clienteTelefono.value.trim(),
+        correo: clienteCorreo.value.trim(),
+        ciudad: clienteCiudad.value.trim(),
+        estatus: clienteEstatus.value
+      };
+      if (!data.nombre) return alert("Nombre de cliente obligatorio.");
+
+      if (editClienteId) {
+        clientes = clientes.map(c => c.id === editClienteId ? { ...c, ...data } : c);
+      } else {
+        clientes.push({ id: nextId("C-", clientes), ...data });
+      }
+
+      persistAll();
+      resetClienteForm();
+      renderAll();
+    });
+
+    btnLimpiarCliente.addEventListener("click", resetClienteForm);
+    clienteBuscar.addEventListener("input", renderClientes);
+
+    function resetClienteForm(){
+      editClienteId = null;
+      clienteNombre.value = "";
+      clienteTelefono.value = "";
+      clienteCorreo.value = "";
+      clienteCiudad.value = "";
+      clienteEstatus.value = "Activo";
+      clienteModo.textContent = "Modo: Crear";
+      btnGuardarCliente.textContent = "Guardar cliente";
+    }
+
+    function editCliente(id){
+      const c = clientes.find(x => x.id === id);
+      if (!c) return;
+      editClienteId = id;
+      clienteNombre.value = c.nombre || "";
+      clienteTelefono.value = c.telefono || "";
+      clienteCorreo.value = c.correo || "";
+      clienteCiudad.value = c.ciudad || "";
+      clienteEstatus.value = c.estatus || "Activo";
+      clienteModo.textContent = "Modo: Editar (" + id + ")";
+      btnGuardarCliente.textContent = "Actualizar cliente";
+    }
+
+    function deleteCliente(id){
+      if (ventas.some(v => v.clienteId === id)) {
+        return alert("No se puede eliminar: el cliente tiene ventas asociadas.");
+      }
+      if (!confirm("¿Eliminar cliente " + id + "?")) return;
+      clientes = clientes.filter(c => c.id !== id);
+      if (editClienteId === id) resetClienteForm();
+      persistAll();
+      renderAll();
+    }
+
+    function renderClientes(){
+      const q = (clienteBuscar.value || "").toLowerCase().trim();
+      const list = clientes.filter(c => {
+        const txt = [c.id,c.nombre,c.telefono,c.correo,c.ciudad,c.estatus].join(" ").toLowerCase();
+        return txt.includes(q);
+      });
+
+      if (!list.length){
+        clientesBody.innerHTML = `<tr><td colspan="7" class="muted">Sin resultados.</td></tr>`;
+        return;
+      }
+
+      clientesBody.innerHTML = list.map(c => `
+        <tr>
+          <td>${esc(c.id)}</td>
+          <td>${esc(c.nombre)}</td>
+          <td>${esc(c.telefono || "-")}</td>
+          <td>${esc(c.correo || "-")}</td>
+          <td>${esc(c.ciudad || "-")}</td>
+          <td><span class="badge ${c.estatus === "Activo" ? "ok" : "bad"}">${esc(c.estatus)}</span></td>
+          <td>
+            <div class="stack">
+              <button class="btn btn-warn btn-sm" onclick="editCliente('${c.id}')">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteCliente('${c.id}')">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // ----------------------------
+    // VENTAS CRUD
+    // ----------------------------
+    btnGuardarVenta.addEventListener("click", () => {
+      const data = {
+        clienteId: ventaClienteId.value,
+        fecha: ventaFecha.value,
+        concepto: ventaConcepto.value.trim(),
+        moneda: ventaMoneda.value,
+        total: Number(ventaTotal.value),
+        estatus: ventaEstatus.value
+      };
+
+      if (!data.clienteId || !data.fecha || !data.concepto || Number.isNaN(data.total)) {
+        return alert("Completa cliente, fecha, concepto y total.");
+      }
+      if (data.total < 0) return alert("Total inválido.");
+
+      if (editVentaId) {
+        ventas = ventas.map(v => v.id === editVentaId ? { ...v, ...data } : v);
+      } else {
+        ventas.push({ id: nextId("V-", ventas, 1001), ...data });
+      }
+
+      persistAll();
+      resetVentaForm();
+      renderAll();
+    });
+
+    btnLimpiarVenta.addEventListener("click", resetVentaForm);
+    ventaBuscar.addEventListener("input", renderVentas);
+
+    function resetVentaForm(){
+      editVentaId = null;
+      ventaClienteId.value = firstActiveClientId();
+      ventaFecha.value = todayISO();
+      ventaConcepto.value = "";
+      ventaMoneda.value = "NIO";
+      ventaTotal.value = "";
+      ventaEstatus.value = "Pagada";
+      ventaModo.textContent = "Modo: Crear";
+      btnGuardarVenta.textContent = "Guardar venta";
+    }
+
+    function editVenta(id){
+      const v = ventas.find(x => x.id === id);
+      if (!v) return;
+      editVentaId = id;
+      ventaClienteId.value = v.clienteId;
+      ventaFecha.value = v.fecha;
+      ventaConcepto.value = v.concepto;
+      ventaMoneda.value = v.moneda || "NIO";
+      ventaTotal.value = v.total;
+      ventaEstatus.value = v.estatus;
+      ventaModo.textContent = "Modo: Editar (" + id + ")";
+      btnGuardarVenta.textContent = "Actualizar venta";
+    }
+
+    function deleteVenta(id){
+      if (!confirm("¿Eliminar venta " + id + "?")) return;
+      ventas = ventas.filter(v => v.id !== id);
+      if (editVentaId === id) resetVentaForm();
+      persistAll();
+      renderAll();
+    }
+
+    function renderVentas(){
+      const q = (ventaBuscar.value || "").toLowerCase().trim();
+      const list = ventas
+        .map(v => ({ ...v, clienteNombre: clienteNameById(v.clienteId) }))
+        .filter(v => [v.id,v.clienteNombre,v.concepto,v.fecha,v.estatus,v.moneda].join(" ").toLowerCase().includes(q))
+        .sort((a,b) => b.id.localeCompare(a.id));
+
+      if (!list.length){
+        ventasBody.innerHTML = `<tr><td colspan="8" class="muted">Sin resultados.</td></tr>`;
+        return;
+      }
+
+      ventasBody.innerHTML = list.map(v => `
+        <tr>
+          <td>${esc(v.id)}</td>
+          <td>${esc(v.clienteNombre)}</td>
+          <td>${esc(v.fecha)}</td>
+          <td>${esc(v.concepto)}</td>
+          <td>${esc(v.moneda)}</td>
+          <td>${money(v.total, v.moneda)}</td>
+          <td><span class="badge ${v.estatus === "Pagada" ? "ok":"warn"}">${esc(v.estatus)}</span></td>
+          <td>
+            <div class="stack">
+              <button class="btn btn-warn btn-sm" onclick="editVenta('${v.id}')">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteVenta('${v.id}')">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // ----------------------------
+    // INVENTARIO CRUD
+    // ----------------------------
+    btnGuardarInv.addEventListener("click", () => {
+      const data = {
+        nombre: invNombre.value.trim(),
+        sku: invSku.value.trim(),
+        stock: Number(invStock.value),
+        costo: Number(invCosto.value),
+        moneda: invMoneda.value
+      };
+
+      if (!data.nombre || Number.isNaN(data.stock) || Number.isNaN(data.costo)) {
+        return alert("Completa nombre, stock y costo.");
+      }
+      if (data.stock < 0 || data.costo < 0) return alert("Stock/costo inválidos.");
+
+      if (editInvId) {
+        inventario = inventario.map(p => p.id === editInvId ? { ...p, ...data } : p);
+      } else {
+        inventario.push({ id: nextId("P-", inventario), ...data });
+      }
+
+      persistAll();
+      resetInvForm();
+      renderAll();
+    });
+
+    btnLimpiarInv.addEventListener("click", resetInvForm);
+    invBuscar.addEventListener("input", renderInventario);
+
+    function resetInvForm(){
+      editInvId = null;
+      invNombre.value = "";
+      invSku.value = "";
+      invStock.value = "";
+      invCosto.value = "";
+      invMoneda.value = "NIO";
+      invModo.textContent = "Modo: Crear";
+      btnGuardarInv.textContent = "Guardar producto";
+    }
+
+    function editInv(id){
+      const p = inventario.find(x => x.id === id);
+      if (!p) return;
+      editInvId = id;
+      invNombre.value = p.nombre || "";
+      invSku.value = p.sku || "";
+      invStock.value = p.stock ?? "";
+      invCosto.value = p.costo ?? "";
+      invMoneda.value = p.moneda || "NIO";
+      invModo.textContent = "Modo: Editar (" + id + ")";
+      btnGuardarInv.textContent = "Actualizar producto";
+    }
+
+    function deleteInv(id){
+      if (compras.some(c => c.productoId === id)) {
+        return alert("No se puede eliminar: el producto tiene compras asociadas.");
+      }
+      if (!confirm("¿Eliminar producto " + id + "?")) return;
+      inventario = inventario.filter(p => p.id !== id);
+      if (editInvId === id) resetInvForm();
+      persistAll();
+      renderAll();
+    }
+
+    function renderInventario(){
+      const q = (invBuscar.value || "").toLowerCase().trim();
+      const list = inventario.filter(p =>
+        [p.id,p.sku,p.nombre,p.stock,p.costo,p.moneda].join(" ").toLowerCase().includes(q)
+      );
+
+      if (!list.length){
+        inventarioBody.innerHTML = `<tr><td colspan="7" class="muted">Sin resultados.</td></tr>`;
+        return;
+      }
+
+      inventarioBody.innerHTML = list.map(p => `
+        <tr>
+          <td>${esc(p.id)}</td>
+          <td>${esc(p.sku || "-")}</td>
+          <td>${esc(p.nombre)}</td>
+          <td>${esc(p.stock)}</td>
+          <td>${esc(p.moneda)}</td>
+          <td>${money(p.costo, p.moneda)}</td>
+          <td>
+            <div class="stack">
+              <button class="btn btn-warn btn-sm" onclick="editInv('${p.id}')">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteInv('${p.id}')">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // ----------------------------
+    // COMPRAS CRUD
+    // ----------------------------
+    btnGuardarComp.addEventListener("click", () => {
+      const data = {
+        proveedor: compProveedor.value.trim(),
+        productoId: compProductoId.value,
+        fecha: compFecha.value,
+        cantidad: Number(compCantidad.value),
+        moneda: compMoneda.value,
+        costoUnit: Number(compCostoUnit.value),
+        aplicarStock: compAplicarStock.value
+      };
+
+      if (!data.proveedor || !data.productoId || !data.fecha || Number.isNaN(data.cantidad) || Number.isNaN(data.costoUnit)) {
+        return alert("Completa proveedor, producto, fecha, cantidad y costo unitario.");
+      }
+      if (data.cantidad <= 0 || data.costoUnit < 0) return alert("Cantidad/costo inválidos.");
+
+      const total = data.cantidad * data.costoUnit;
+
+      if (editCompraId) {
+        // revertir stock anterior si aplicaba
+        const prev = compras.find(c => c.id === editCompraId);
+        if (prev && prev.aplicarStock === "si") adjustStock(prev.productoId, -Number(prev.cantidad));
+
+        compras = compras.map(c => c.id === editCompraId ? { ...c, ...data, total } : c);
+
+        // aplicar stock nuevo si corresponde
+        if (data.aplicarStock === "si") adjustStock(data.productoId, data.cantidad);
+      } else {
+        compras.push({ id: nextId("CP-", compras), ...data, total });
+        if (data.aplicarStock === "si") adjustStock(data.productoId, data.cantidad);
+      }
+
+      persistAll();
+      resetCompForm();
+      renderAll();
+    });
+
+    btnLimpiarComp.addEventListener("click", resetCompForm);
+    compBuscar.addEventListener("input", renderCompras);
+
+    function resetCompForm(){
+      editCompraId = null;
+      compProveedor.value = "";
+      compProductoId.value = firstProductId();
+      compFecha.value = todayISO();
+      compMoneda.value = "NIO";
+      compCantidad.value = "";
+      compCostoUnit.value = "";
+      compAplicarStock.value = "si";
+      compModo.textContent = "Modo: Crear";
+      btnGuardarComp.textContent = "Guardar compra";
+    }
+
+    function editComp(id){
+      const c = compras.find(x => x.id === id);
+      if (!c) return;
+      editCompraId = id;
+      compProveedor.value = c.proveedor || "";
+      compProductoId.value = c.productoId || firstProductId();
+      compFecha.value = c.fecha || todayISO();
+      compMoneda.value = c.moneda || "NIO";
+      compCantidad.value = c.cantidad ?? "";
+      compCostoUnit.value = c.costoUnit ?? "";
+      compAplicarStock.value = c.aplicarStock || "si";
+      compModo.textContent = "Modo: Editar (" + id + ")";
+      btnGuardarComp.textContent = "Actualizar compra";
+    }
+
+    function deleteComp(id){
+      const c = compras.find(x => x.id === id);
+      if (!c) return;
+      if (!confirm("¿Eliminar compra " + id + "?")) return;
+
+      if (c.aplicarStock === "si") adjustStock(c.productoId, -Number(c.cantidad));
+      compras = compras.filter(x => x.id !== id);
+
+      if (editCompraId === id) resetCompForm();
+      persistAll();
+      renderAll();
+    }
+
+    function adjustStock(productoId, delta){
+      inventario = inventario.map(p =>
+        p.id === productoId ? { ...p, stock: Math.max(0, Number(p.stock || 0) + Number(delta || 0)) } : p
+      );
+    }
+
+    function renderCompras(){
+      const q = (compBuscar.value || "").toLowerCase().trim();
+      const list = compras
+        .map(c => ({ ...c, productoNombre: productNameById(c.productoId) }))
+        .filter(c => [c.id,c.proveedor,c.productoNombre,c.fecha,c.moneda,c.total].join(" ").toLowerCase().includes(q))
+        .sort((a,b) => b.id.localeCompare(a.id));
+
+      if (!list.length){
+        comprasBody.innerHTML = `<tr><td colspan="8" class="muted">Sin resultados.</td></tr>`;
+        return;
+      }
+
+      comprasBody.innerHTML = list.map(c => `
+        <tr>
+          <td>${esc(c.id)}</td>
+          <td>${esc(c.proveedor)}</td>
+          <td>${esc(c.productoNombre)}</td>
+          <td>${esc(c.fecha)}</td>
+          <td>${esc(c.cantidad)}</td>
+          <td>${esc(c.moneda)}</td>
+          <td>${money(c.total, c.moneda)}</td>
+          <td>
+            <div class="stack">
+              <button class="btn btn-warn btn-sm" onclick="editComp('${c.id}')">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteComp('${c.id}')">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // ----------------------------
+    // Selects dependientes
+    // ----------------------------
+    function renderClienteSelect(){
+      const activos = clientes.filter(c => c.estatus === "Activo");
+      if (!activos.length) {
+        ventaClienteId.innerHTML = `<option value="">Sin clientes activos</option>`;
+        return;
+      }
+      ventaClienteId.innerHTML = activos.map(c => `<option value="${esc(c.id)}">${esc(c.nombre)} (${esc(c.id)})</option>`).join("");
+      if (!ventaClienteId.value || !activos.some(c => c.id === ventaClienteId.value)) {
+        ventaClienteId.value = activos[0].id;
+      }
+    }
+
+    function renderProductoSelect(){
+      if (!inventario.length) {
+        compProductoId.innerHTML = `<option value="">Sin productos</option>`;
+        return;
+      }
+      compProductoId.innerHTML = inventario.map(p => `<option value="${esc(p.id)}">${esc(p.nombre)} (${esc(p.id)})</option>`).join("");
+      if (!compProductoId.value || !inventario.some(p => p.id === compProductoId.value)) {
+        compProductoId.value = inventario[0].id;
+      }
+    }
+
+    function firstActiveClientId(){
+      const c = clientes.find(x => x.estatus === "Activo");
+      return c ? c.id : "";
+    }
+
+    function firstProductId(){
+      return inventario.length ? inventario[0].id : "";
+    }
+
+    // ----------------------------
+    // Dashboard / reportes
+    // ----------------------------
+    function renderDashboard(){
+      const activos = clientes.filter(c => c.estatus === "Activo").length;
+      const sumNIO = ventas.filter(v => v.moneda === "NIO").reduce((a,v) => a + Number(v.total||0), 0);
+      const sumUSD = ventas.filter(v => v.moneda === "USD").reduce((a,v) => a + Number(v.total||0), 0);
+
+      kpiClientes.textContent = String(activos);
+      kpiVentas.textContent = String(ventas.length);
+      kpiVentasNIO.textContent = money(sumNIO, "NIO");
+      kpiVentasUSD.textContent = money(sumUSD, "USD");
+
+      const last = [...ventas]
+        .map(v => ({ ...v, clienteNombre: clienteNameById(v.clienteId) }))
+        .sort((a,b) => b.id.localeCompare(a.id))
+        .slice(0, 6);
+
+      if (!last.length){
+        dashboardVentasBody.innerHTML = `<tr><td colspan="6" class="muted">Sin ventas registradas.</td></tr>`;
+      } else {
+        dashboardVentasBody.innerHTML = last.map(v => `
+          <tr>
+            <td>${esc(v.id)}</td>
+            <td>${esc(v.clienteNombre)}</td>
+            <td>${esc(v.fecha)}</td>
+            <td>${esc(v.moneda)}</td>
+            <td>${money(v.total, v.moneda)}</td>
+            <td><span class="badge ${v.estatus === "Pagada" ? "ok":"warn"}">${esc(v.estatus)}</span></td>
+          </tr>
+        `).join("");
+      }
+    }
+
+    function renderReportes(){
+      const from = repDesde.value;
+      const to = repHasta.value;
+
+      const ventasFil = ventas.filter(v => inDateRange(v.fecha, from, to));
+      const comprasFil = compras.filter(c => inDateRange(c.fecha, from, to));
+
+      const clientesActivos = clientes.filter(c => c.estatus === "Activo").length;
+      const ventasPagadas = ventasFil.filter(v => v.estatus === "Pagada").length;
+      const ventasPend = ventasFil.filter(v => v.estatus === "Pendiente").length;
+
+      const vNio = ventasFil.filter(v => v.moneda === "NIO").reduce((a,v) => a + Number(v.total||0), 0);
+      const vUsd = ventasFil.filter(v => v.moneda === "USD").reduce((a,v) => a + Number(v.total||0), 0);
+      const cNio = comprasFil.filter(c => c.moneda === "NIO").reduce((a,c) => a + Number(c.total||0), 0);
+      const cUsd = comprasFil.filter(c => c.moneda === "USD").reduce((a,c) => a + Number(c.total||0), 0);
+
+      repClientesActivos.textContent = String(clientesActivos);
+      repVentasPagadas.textContent = String(ventasPagadas);
+      repVentasPendientes.textContent = String(ventasPend);
+      repTotalNIO.textContent = money(vNio, "NIO");
+      repTotalUSD.textContent = money(vUsd, "USD");
+      repComprasCount.textContent = String(comprasFil.length);
+      repComprasNIO.textContent = money(cNio, "NIO");
+      repComprasUSD.textContent = money(cUsd, "USD");
+    }
+
+    btnAplicarReporte.addEventListener("click", renderReportes);
+    btnResetReporte.addEventListener("click", () => {
+      repDesde.value = "";
+      repHasta.value = "";
+      renderReportes();
+    });
+
+    // ----------------------------
+    // Render global
+    // ----------------------------
+    function renderAll(){
+      persistAll();
+      renderClienteSelect();
+      renderProductoSelect();
+      renderClientes();
+      renderVentas();
+      renderInventario();
+      renderCompras();
+      renderDashboard();
+      renderReportes();
+
+      if (!ventaFecha.value) ventaFecha.value = todayISO();
+      if (!compFecha.value) compFecha.value = todayISO();
+      if (!ventaClienteId.value) ventaClienteId.value = firstActiveClientId();
+      if (!compProductoId.value) compProductoId.value = firstProductId();
+    }
+
+    // Exponer para botones inline
+    window.editCliente = editCliente;
+    window.deleteCliente = deleteCliente;
+    window.editVenta = editVenta;
+    window.deleteVenta = deleteVenta;
+    window.editInv = editInv;
+    window.deleteInv = deleteInv;
+    window.editComp = editComp;
+    window.deleteComp = deleteComp;
+
+    // Inicializar formularios
+    resetVentaForm();
+    resetCompForm();
+    renderAll();
+  </script>
+</body>
 </html>
