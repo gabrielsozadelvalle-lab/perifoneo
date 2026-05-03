@@ -86,7 +86,7 @@ export default function Facturacion() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Facturación</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Facturacion</h1>
           <p className="text-sm text-muted-foreground mt-1">Control de cobros mensuales por cliente</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -181,6 +181,9 @@ export default function Facturacion() {
                     <span className="text-sm text-muted-foreground">{nombreMes(f.mes)} {f.anio}</span>
                     <span className="font-bold text-lg">{formatCordoba(f.monto)}</span>
                   </div>
+                  {f.metodo_pago && (
+                    <p className="text-xs text-muted-foreground">Cobro: {f.metodo_pago}</p>
+                  )}
                   <div className="flex flex-wrap gap-2 pt-1">
                     {f.estado !== "pagado" && (
                       <Button size="sm" className="gap-1 bg-gradient-success" onClick={() => { setPayTarget(f); setPayOpen(true); }}>
@@ -209,6 +212,7 @@ export default function Facturacion() {
                   <TableHead>Periodo</TableHead>
                   <TableHead>Vencimiento</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>Cobro</TableHead>
                   <TableHead className="text-right">Monto</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
@@ -223,6 +227,7 @@ export default function Facturacion() {
                       {f.fecha_vencimiento ?? "—"}
                     </TableCell>
                     <TableCell>{estadoBadge(f.estado)}</TableCell>
+                    <TableCell className="max-w-56 truncate text-sm text-muted-foreground">{f.metodo_pago ?? "—"}</TableCell>
                     <TableCell className="text-right font-semibold">{formatCordoba(f.monto)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
@@ -265,6 +270,7 @@ export default function Facturacion() {
             <DialogTitle>Marcar como pagada</DialogTitle>
           </DialogHeader>
           <PayForm
+            monto={Number(payTarget?.monto ?? 0)}
             onSubmit={(fecha_pago, metodo_pago) => {
               marcarPagada.mutate({ id: payTarget.id, fecha_pago, metodo_pago }, { onSuccess: () => setPayOpen(false) });
             }}
@@ -311,12 +317,30 @@ function KpiCard({ label, value, icon: Icon, gradient }: any) {
   );
 }
 
-function PayForm({ onSubmit }: { onSubmit: (fecha: string, metodo: string) => void }) {
+function PayForm({ monto, onSubmit }: { monto: number; onSubmit: (fecha: string, metodo: string) => void }) {
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   const [metodo, setMetodo] = useState("efectivo");
+  const [efectivo, setEfectivo] = useState("");
+  const [transferencia, setTransferencia] = useState("");
+  const [tarjeta, setTarjeta] = useState("");
+  const montoEfectivo = metodo === "efectivo" || metodo === "mixto" ? Number(efectivo || 0) : 0;
+  const montoTransferencia = metodo === "transferencia" || metodo === "mixto" ? Number(transferencia || 0) : 0;
+  const montoTarjeta = metodo === "tarjeta" || metodo === "mixto" ? Number(tarjeta || 0) : 0;
+  const totalCobrado = montoEfectivo + montoTransferencia + montoTarjeta;
+  const metodoPago = () => {
+    const partes = [
+      montoEfectivo > 0 && `Efectivo ${formatCordoba(montoEfectivo)}`,
+      montoTransferencia > 0 && `Transferencia ${formatCordoba(montoTransferencia)}`,
+      montoTarjeta > 0 && `Tarjeta ${formatCordoba(montoTarjeta)}`,
+    ].filter(Boolean);
+
+    if (partes.length > 0) return metodo === "mixto" ? `Mixto: ${partes.join(" + ")}` : String(partes[0]);
+    return metodo.charAt(0).toUpperCase() + metodo.slice(1);
+  };
+
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); onSubmit(fecha, metodo); }}
+      onSubmit={(e) => { e.preventDefault(); onSubmit(fecha, metodoPago()); }}
       className="space-y-4"
     >
       <div className="space-y-2">
@@ -324,17 +348,47 @@ function PayForm({ onSubmit }: { onSubmit: (fecha: string, metodo: string) => vo
         <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
       </div>
       <div className="space-y-2">
-        <Label>Método de pago</Label>
+        <Label>Metodo de pago</Label>
         <Select value={metodo} onValueChange={setMetodo}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="efectivo">Efectivo</SelectItem>
             <SelectItem value="transferencia">Transferencia</SelectItem>
             <SelectItem value="tarjeta">Tarjeta</SelectItem>
-            <SelectItem value="otro">Otro</SelectItem>
+            <SelectItem value="mixto">Mixto</SelectItem>
           </SelectContent>
         </Select>
       </div>
+      <div className={metodo === "mixto" ? "grid grid-cols-1 sm:grid-cols-3 gap-3" : "space-y-2"}>
+        {(metodo === "efectivo" || metodo === "mixto") && (
+          <div className="space-y-2">
+            <Label>Efectivo (C$)</Label>
+            <Input type="number" min="0" step="0.01" value={efectivo} onChange={(e) => setEfectivo(e.target.value)} />
+          </div>
+        )}
+        {(metodo === "transferencia" || metodo === "mixto") && (
+          <div className="space-y-2">
+            <Label>Transferencia (C$)</Label>
+            <Input type="number" min="0" step="0.01" value={transferencia} onChange={(e) => setTransferencia(e.target.value)} />
+          </div>
+        )}
+        {(metodo === "tarjeta" || metodo === "mixto") && (
+          <div className="space-y-2">
+            <Label>Tarjeta (C$)</Label>
+            <Input type="number" min="0" step="0.01" value={tarjeta} onChange={(e) => setTarjeta(e.target.value)} />
+          </div>
+        )}
+      </div>
+      <div className="rounded-lg border bg-muted/40 p-3 text-sm flex items-center justify-between gap-3">
+        <span className="text-muted-foreground">Total factura</span>
+        <span className="font-semibold">{formatCordoba(monto)}</span>
+      </div>
+      {totalCobrado > 0 && (
+        <div className="rounded-lg border bg-muted/40 p-3 text-sm flex items-center justify-between gap-3">
+          <span className="text-muted-foreground">Total recibido</span>
+          <span className="font-semibold">{formatCordoba(totalCobrado)}</span>
+        </div>
+      )}
       <DialogFooter>
         <Button type="submit" className="bg-gradient-success">Confirmar pago</Button>
       </DialogFooter>
