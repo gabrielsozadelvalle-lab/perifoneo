@@ -76,6 +76,54 @@ export type Database = {
           },
         ]
       }
+      facturas: {
+        Row: {
+          anio: number
+          cliente_id: string
+          created_at: string
+          estado: Database["public"]["Enums"]["factura_estado"]
+          fecha_emision: string
+          fecha_pago: string | null
+          fecha_vencimiento: string | null
+          id: string
+          mes: number
+          metodo_pago: string | null
+          monto: number
+          notas: string | null
+          updated_at: string
+        }
+        Insert: {
+          anio: number
+          cliente_id: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["factura_estado"]
+          fecha_emision?: string
+          fecha_pago?: string | null
+          fecha_vencimiento?: string | null
+          id?: string
+          mes: number
+          metodo_pago?: string | null
+          monto?: number
+          notas?: string | null
+          updated_at?: string
+        }
+        Update: {
+          anio?: number
+          cliente_id?: string
+          created_at?: string
+          estado?: Database["public"]["Enums"]["factura_estado"]
+          fecha_emision?: string
+          fecha_pago?: string | null
+          fecha_vencimiento?: string | null
+          id?: string
+          mes?: number
+          metodo_pago?: string | null
+          monto?: number
+          notas?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       servicios_contratados: {
         Row: {
           cantidad_mensual: number
@@ -151,7 +199,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      factura_estado: "pendiente" | "pagado" | "vencido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -278,6 +326,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      factura_estado: ["pendiente", "pagado", "vencido"],
+    },
   },
 } as const
