@@ -29,6 +29,15 @@ export function ClienteDetail({ open, onOpenChange, cliente }: Props) {
   const perContratados = contratados.find((s: any) => s.tipo === "perifoneo")?.cantidad_mensual ?? 0;
   const actRealizadas = realizados.filter((s: any) => s.tipo === "activacion").length;
   const perRealizados = realizados.filter((s: any) => s.tipo === "perifoneo").length;
+  const getNotasLines = (servicio: any) => String(servicio.notas || "").split(/\r?\n/);
+  const formatCobro = (servicio: any) => {
+    const cobroLine = getNotasLines(servicio).find((line) => line.startsWith("Cobro: "));
+    return cobroLine?.replace("Cobro: ", "") || "—";
+  };
+  const formatNotas = (servicio: any) => {
+    const notas = getNotasLines(servicio).filter((line) => !line.startsWith("Cobro: ")).join(" ").trim();
+    return notas || "—";
+  };
 
   return (
     <>
@@ -98,6 +107,7 @@ export function ClienteDetail({ open, onOpenChange, cliente }: Props) {
                     <TableRow>
                       <TableHead>Fecha</TableHead>
                       <TableHead>Tipo</TableHead>
+                      <TableHead className="hidden md:table-cell">Cobro</TableHead>
                       <TableHead className="hidden sm:table-cell">Notas</TableHead>
                       <TableHead className="w-24 text-right">Acciones</TableHead>
                     </TableRow>
@@ -109,7 +119,8 @@ export function ClienteDetail({ open, onOpenChange, cliente }: Props) {
                         <TableCell>
                           <Badge variant="outline">{s.tipo === "activacion" ? "Activación" : "Perifoneo"}</Badge>
                         </TableCell>
-                        <TableCell className="text-xs hidden sm:table-cell">{s.notas || "—"}</TableCell>
+                        <TableCell className="text-xs hidden md:table-cell">{formatCobro(s)}</TableCell>
+                        <TableCell className="text-xs hidden sm:table-cell">{formatNotas(s)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
                             <Button

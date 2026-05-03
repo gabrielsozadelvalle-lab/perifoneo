@@ -1,4 +1,3 @@
-
 export interface BusinessData {
     name: string;
     phone: string;
@@ -10,9 +9,25 @@ export interface BusinessData {
 export const DEFAULT_BUSINESS_DATA: BusinessData = {
     name: "PERIFONEO MATAGALPA",
     phone: "+505 8888 8888",
-    address: "Del Parque Morazán, 1c. al Este. Matagalpa.",
-    slogan: "¡Llegamos a cada rincón con tu mensaje!",
+    address: "Del Parque Morazan, 1c. al Este. Matagalpa.",
+    slogan: "Llegamos a cada rincon con tu mensaje!",
 };
+
+function formatPayment(servicio: any) {
+    const cobroLine = String(servicio.notas || "")
+        .split(/\r?\n/)
+        .find((line) => line.startsWith("Cobro: "));
+    return cobroLine?.replace("Cobro: ", "") || "No especificado";
+}
+
+function formatNotes(servicio: any) {
+    const notas = String(servicio.notas || "")
+        .split(/\r?\n/)
+        .filter((line) => !line.startsWith("Cobro: "))
+        .join(" ")
+        .trim();
+    return notas || "Sin observaciones";
+}
 
 export function generateWhatsAppMessage(
     cliente: any,
@@ -20,33 +35,34 @@ export function generateWhatsAppMessage(
     business: BusinessData = DEFAULT_BUSINESS_DATA
 ) {
     const fecha = new Date(servicio.fecha).toLocaleDateString("es-NI", {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
     });
 
-    const tipoServicio = servicio.tipo === "activacion" ? "ACTIVACIÓN" : "PERIFONEO";
-    const emoji = servicio.tipo === "activacion" ? "📻" : "🔊";
+    const tipoServicio = servicio.tipo === "activacion" ? "ACTIVACION" : "PERIFONEO";
+    const metodoCobro = formatPayment(servicio);
 
     const message = `
 *${business.name}*
 ${business.slogan ? `_${business.slogan}_` : ""}
-━━━━━━━━━━━━━━━━━━━━
+--------------------
 *CONTROL DE SERVICIO*
-━━━━━━━━━━━━━━━━━━━━
+--------------------
 
-  👤 *Cliente:* ${cliente.nombre}
-  ${emoji} *Servicio:* ${tipoServicio}
-  📅 *Fecha:* ${fecha}
-  📝 *Notas:* ${servicio.notas || "Sin observaciones"}
+  *Cliente:* ${cliente.nombre}
+  *Servicio:* ${tipoServicio}
+  *Fecha:* ${fecha}
+  *Cobro:* ${metodoCobro}
+  *Notas:* ${formatNotes(servicio)}
 
-━━━━━━━━━━━━━━━━━━━━
-  📞 *Contacto:* ${business.phone}
-  📍 *Dirección:* ${business.address}
+--------------------
+  *Contacto:* ${business.phone}
+  *Direccion:* ${business.address}
 
-*¡Gracias por su confianza!*
-━━━━━━━━━━━━━━━━━━━━
+*Gracias por su confianza!*
+--------------------
 `.trim();
 
     return encodeURIComponent(message);
@@ -54,14 +70,12 @@ ${business.slogan ? `_${business.slogan}_` : ""}
 
 export function openWhatsApp(cliente: any, servicio: any) {
     const message = generateWhatsAppMessage(cliente, servicio);
-    const phone = cliente.telefono ? cliente.telefono.replace(/\s+/g, '') : "";
+    const phone = cliente.telefono ? cliente.telefono.replace(/\s+/g, "") : "";
 
-    // Clean phone number (remove non-digits, but keep + if present)
-    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    const cleanPhone = phone.replace(/[^\d+]/g, "");
 
-    // Format phone for international use if it doesn't have it (assuming Nicaragua +505)
     let finalPhone = cleanPhone;
-    if (finalPhone && !finalPhone.startsWith('+')) {
+    if (finalPhone && !finalPhone.startsWith("+")) {
         if (finalPhone.length === 8) {
             finalPhone = `505${finalPhone}`;
         }
