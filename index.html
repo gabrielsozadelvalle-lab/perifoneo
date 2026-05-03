@@ -200,6 +200,7 @@
           <button class="active" data-section="dashboard">Dashboard</button>
           <button data-section="clientes">Clientes</button>
           <button data-section="ventas">Ventas</button>
+          <button data-section="facturacion">Facturacion</button>
           <button data-section="inventario">Inventario</button>
           <button data-section="compras">Compras</button>
           <button data-section="reportes">Reportes</button>
@@ -360,6 +361,74 @@
                 </tr>
               </thead>
               <tbody id="ventasBody">
+                <tr><td colspan="8" class="muted">Sin ventas.</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- FACTURACION -->
+        <section id="section-facturacion" class="section">
+          <div class="cards">
+            <div class="card"><small>Ventas pendientes</small><strong id="facPendientes">0</strong></div>
+            <div class="card"><small>Ventas pagadas</small><strong id="facPagadas">0</strong></div>
+            <div class="card"><small>Pendiente C$</small><strong id="facPendienteNIO">C$ 0.00</strong></div>
+            <div class="card"><small>Pendiente $</small><strong id="facPendienteUSD">$ 0.00</strong></div>
+          </div>
+
+          <section class="panel">
+            <h3 style="margin:0 0 10px">Registrar cobro</h3>
+            <div class="grid-4">
+              <div style="grid-column: span 2">
+                <label class="label">Venta pendiente *</label>
+                <select id="facVentaId" class="input"></select>
+              </div>
+              <div>
+                <label class="label">Fecha de cobro *</label>
+                <input id="facFecha" class="input" type="date" />
+              </div>
+              <div>
+                <label class="label">Tipo de cobro</label>
+                <select id="facMetodo" class="input">
+                  <option value="efectivo">Efectivo</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="mixto">Mixto</option>
+                </select>
+              </div>
+              <div id="facEfectivoBox">
+                <label class="label">Efectivo</label>
+                <input id="facEfectivo" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+              <div id="facTransferenciaBox">
+                <label class="label">Transferencia</label>
+                <input id="facTransferencia" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+              <div id="facTarjetaBox">
+                <label class="label">Tarjeta</label>
+                <input id="facTarjeta" class="input" type="number" step="0.01" min="0" placeholder="0.00" />
+              </div>
+              <div>
+                <label class="label">Buscar</label>
+                <input id="facBuscar" class="input" placeholder="Folio, cliente, metodo..." />
+              </div>
+            </div>
+            <div class="stack" style="margin-top:10px">
+              <button id="btnGuardarCobro" class="btn btn-success btn-sm">Registrar cobro</button>
+              <button id="btnLimpiarCobro" class="btn btn-ghost btn-sm">Limpiar</button>
+              <small id="facResumen" class="muted">Selecciona una venta pendiente.</small>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3 style="margin:0 0 6px">Listado de facturacion</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Folio</th><th>Cliente</th><th>Fecha</th><th>Moneda</th><th>Total</th><th>Estatus</th><th>Cobro</th><th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="facturacionBody">
                 <tr><td colspan="8" class="muted">Sin ventas.</td></tr>
               </tbody>
             </table>
@@ -684,6 +753,26 @@
     const ventaModo = document.getElementById("ventaModo");
     const ventasBody = document.getElementById("ventasBody");
 
+    // Facturacion
+    const facPendientes = document.getElementById("facPendientes");
+    const facPagadas = document.getElementById("facPagadas");
+    const facPendienteNIO = document.getElementById("facPendienteNIO");
+    const facPendienteUSD = document.getElementById("facPendienteUSD");
+    const facVentaId = document.getElementById("facVentaId");
+    const facFecha = document.getElementById("facFecha");
+    const facMetodo = document.getElementById("facMetodo");
+    const facEfectivo = document.getElementById("facEfectivo");
+    const facTransferencia = document.getElementById("facTransferencia");
+    const facTarjeta = document.getElementById("facTarjeta");
+    const facEfectivoBox = document.getElementById("facEfectivoBox");
+    const facTransferenciaBox = document.getElementById("facTransferenciaBox");
+    const facTarjetaBox = document.getElementById("facTarjetaBox");
+    const facBuscar = document.getElementById("facBuscar");
+    const btnGuardarCobro = document.getElementById("btnGuardarCobro");
+    const btnLimpiarCobro = document.getElementById("btnLimpiarCobro");
+    const facResumen = document.getElementById("facResumen");
+    const facturacionBody = document.getElementById("facturacionBody");
+
     // Inventario
     const invNombre = document.getElementById("invNombre");
     const invSku = document.getElementById("invSku");
@@ -1007,9 +1096,147 @@
           <td><span class="badge ${v.estatus === "Pagada" ? "ok":"warn"}">${esc(v.estatus)}</span></td>
           <td>
             <div class="stack">
+              ${v.estatus !== "Pagada" ? `<button class="btn btn-success btn-sm" onclick="cobrarVenta('${v.id}')">Cobrar</button>` : ""}
               <button class="btn btn-warn btn-sm" onclick="editVenta('${v.id}')">Editar</button>
               <button class="btn btn-danger btn-sm" onclick="deleteVenta('${v.id}')">Eliminar</button>
             </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // ----------------------------
+    // FACTURACION / COBROS
+    // ----------------------------
+    btnGuardarCobro.addEventListener("click", () => {
+      const venta = ventas.find(v => v.id === facVentaId.value);
+      if (!venta) return alert("Selecciona una venta pendiente.");
+
+      const efectivo = (facMetodo.value === "efectivo" || facMetodo.value === "mixto") ? Number(facEfectivo.value || 0) : 0;
+      const transferencia = (facMetodo.value === "transferencia" || facMetodo.value === "mixto") ? Number(facTransferencia.value || 0) : 0;
+      const tarjeta = (facMetodo.value === "tarjeta" || facMetodo.value === "mixto") ? Number(facTarjeta.value || 0) : 0;
+      const totalRecibido = efectivo + transferencia + tarjeta;
+
+      if (!facFecha.value) return alert("Selecciona fecha de cobro.");
+      if (totalRecibido <= 0) return alert("Ingresa al menos un monto de cobro.");
+
+      const partes = [
+        efectivo > 0 && `Efectivo ${money(efectivo, venta.moneda)}`,
+        transferencia > 0 && `Transferencia ${money(transferencia, venta.moneda)}`,
+        tarjeta > 0 && `Tarjeta ${money(tarjeta, venta.moneda)}`
+      ].filter(Boolean);
+
+      ventas = ventas.map(v => v.id === venta.id ? {
+        ...v,
+        estatus: "Pagada",
+        fechaCobro: facFecha.value,
+        metodoCobro: facMetodo.value === "mixto" ? `Mixto: ${partes.join(" + ")}` : partes[0],
+        cobroEfectivo: efectivo,
+        cobroTransferencia: transferencia,
+        cobroTarjeta: tarjeta
+      } : v);
+
+      persistAll();
+      resetCobroForm();
+      renderAll();
+    });
+
+    btnLimpiarCobro.addEventListener("click", resetCobroForm);
+    facMetodo.addEventListener("change", updateCobroFields);
+    facVentaId.addEventListener("change", updateCobroSummary);
+    facBuscar.addEventListener("input", renderFacturacion);
+    [facEfectivo, facTransferencia, facTarjeta].forEach(input => input.addEventListener("input", updateCobroSummary));
+
+    function resetCobroForm(){
+      facVentaId.value = firstPendingVentaId();
+      facFecha.value = todayISO();
+      facMetodo.value = "efectivo";
+      facEfectivo.value = "";
+      facTransferencia.value = "";
+      facTarjeta.value = "";
+      facBuscar.value = "";
+      updateCobroFields();
+      updateCobroSummary();
+    }
+
+    function updateCobroFields(){
+      const metodo = facMetodo.value;
+      facEfectivoBox.style.display = (metodo === "efectivo" || metodo === "mixto") ? "" : "none";
+      facTransferenciaBox.style.display = (metodo === "transferencia" || metodo === "mixto") ? "" : "none";
+      facTarjetaBox.style.display = (metodo === "tarjeta" || metodo === "mixto") ? "" : "none";
+      updateCobroSummary();
+    }
+
+    function updateCobroSummary(){
+      const venta = ventas.find(v => v.id === facVentaId.value);
+      if (!venta) {
+        facResumen.textContent = "No hay ventas pendientes para cobrar.";
+        return;
+      }
+      const efectivo = (facMetodo.value === "efectivo" || facMetodo.value === "mixto") ? Number(facEfectivo.value || 0) : 0;
+      const transferencia = (facMetodo.value === "transferencia" || facMetodo.value === "mixto") ? Number(facTransferencia.value || 0) : 0;
+      const tarjeta = (facMetodo.value === "tarjeta" || facMetodo.value === "mixto") ? Number(facTarjeta.value || 0) : 0;
+      const recibido = efectivo + transferencia + tarjeta;
+      facResumen.textContent = `${venta.id} - ${clienteNameById(venta.clienteId)} | Total ${money(venta.total, venta.moneda)} | Recibido ${money(recibido, venta.moneda)}`;
+    }
+
+    function renderVentaCobroSelect(){
+      const pendientes = ventas.filter(v => v.estatus !== "Pagada");
+      if (!pendientes.length) {
+        facVentaId.innerHTML = `<option value="">Sin ventas pendientes</option>`;
+        return;
+      }
+      facVentaId.innerHTML = pendientes.map(v => (
+        `<option value="${esc(v.id)}">${esc(v.id)} - ${esc(clienteNameById(v.clienteId))} - ${money(v.total, v.moneda)}</option>`
+      )).join("");
+      if (!facVentaId.value || !pendientes.some(v => v.id === facVentaId.value)) facVentaId.value = pendientes[0].id;
+    }
+
+    function firstPendingVentaId(){
+      const v = ventas.find(x => x.estatus !== "Pagada");
+      return v ? v.id : "";
+    }
+
+    function cobrarVenta(id){
+      activateSection("facturacion", "Facturacion");
+      menuButtons.forEach(b => b.classList.toggle("active", b.getAttribute("data-section") === "facturacion"));
+      facVentaId.value = id;
+      updateCobroSummary();
+    }
+
+    function renderFacturacion(){
+      const q = (facBuscar.value || "").toLowerCase().trim();
+      const pendientes = ventas.filter(v => v.estatus !== "Pagada");
+      const pagadas = ventas.filter(v => v.estatus === "Pagada");
+      const pendienteNIO = pendientes.filter(v => v.moneda === "NIO").reduce((a,v) => a + Number(v.total || 0), 0);
+      const pendienteUSD = pendientes.filter(v => v.moneda === "USD").reduce((a,v) => a + Number(v.total || 0), 0);
+
+      facPendientes.textContent = String(pendientes.length);
+      facPagadas.textContent = String(pagadas.length);
+      facPendienteNIO.textContent = money(pendienteNIO, "NIO");
+      facPendienteUSD.textContent = money(pendienteUSD, "USD");
+
+      const list = ventas
+        .map(v => ({ ...v, clienteNombre: clienteNameById(v.clienteId) }))
+        .filter(v => [v.id, v.clienteNombre, v.fecha, v.moneda, v.estatus, v.metodoCobro].join(" ").toLowerCase().includes(q))
+        .sort((a,b) => b.id.localeCompare(a.id));
+
+      if (!list.length) {
+        facturacionBody.innerHTML = `<tr><td colspan="8" class="muted">Sin resultados.</td></tr>`;
+        return;
+      }
+
+      facturacionBody.innerHTML = list.map(v => `
+        <tr>
+          <td>${esc(v.id)}</td>
+          <td>${esc(v.clienteNombre)}</td>
+          <td>${esc(v.fecha)}</td>
+          <td>${esc(v.moneda)}</td>
+          <td>${money(v.total, v.moneda)}</td>
+          <td><span class="badge ${v.estatus === "Pagada" ? "ok":"warn"}">${esc(v.estatus)}</span></td>
+          <td>${esc(v.metodoCobro || "-")}</td>
+          <td>
+            ${v.estatus !== "Pagada" ? `<button class="btn btn-success btn-sm" onclick="cobrarVenta('${v.id}')">Cobrar</button>` : `<span class="muted">${esc(v.fechaCobro || "")}</span>`}
           </td>
         </tr>
       `).join("");
@@ -1340,8 +1567,10 @@
       persistAll();
       renderClienteSelect();
       renderProductoSelect();
+      renderVentaCobroSelect();
       renderClientes();
       renderVentas();
+      renderFacturacion();
       renderInventario();
       renderCompras();
       renderDashboard();
@@ -1349,8 +1578,11 @@
 
       if (!ventaFecha.value) ventaFecha.value = todayISO();
       if (!compFecha.value) compFecha.value = todayISO();
+      if (!facFecha.value) facFecha.value = todayISO();
       if (!ventaClienteId.value) ventaClienteId.value = firstActiveClientId();
       if (!compProductoId.value) compProductoId.value = firstProductId();
+      if (!facVentaId.value) facVentaId.value = firstPendingVentaId();
+      updateCobroFields();
     }
 
     // Exponer para botones inline
@@ -1358,6 +1590,7 @@
     window.deleteCliente = deleteCliente;
     window.editVenta = editVenta;
     window.deleteVenta = deleteVenta;
+    window.cobrarVenta = cobrarVenta;
     window.editInv = editInv;
     window.deleteInv = deleteInv;
     window.editComp = editComp;
@@ -1366,6 +1599,7 @@
     // Inicializar formularios
     resetVentaForm();
     resetCompForm();
+    resetCobroForm();
     renderAll();
   </script>
 </body>
