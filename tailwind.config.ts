@@ -64,7 +64,23 @@ export default {
         warning: {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
+          soft: "hsl(var(--warning-soft))",
         },
+        "success-soft": "hsl(var(--success-soft))",
+        "danger-soft": "hsl(var(--danger-soft))",
+        "info-soft": "hsl(var(--info-soft))",
+      },
+      backgroundImage: {
+        "gradient-primary": "var(--gradient-primary)",
+        "gradient-accent": "var(--gradient-accent)",
+        "gradient-success": "var(--gradient-success)",
+        "gradient-sidebar": "var(--gradient-sidebar)",
+        "gradient-subtle": "var(--gradient-subtle)",
+      },
+      boxShadow: {
+        card: "var(--shadow-card)",
+        elegant: "var(--shadow-lg)",
+        glow: "var(--shadow-glow)",
       },
       borderRadius: {
         lg: "var(--radius)",
