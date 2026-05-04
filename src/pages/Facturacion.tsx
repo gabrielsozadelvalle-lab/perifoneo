@@ -86,7 +86,7 @@ export default function Facturacion() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Facturacion</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">Facturación</h1>
           <p className="text-sm text-muted-foreground mt-1">Control de cobros mensuales por cliente</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -301,14 +301,15 @@ export default function Facturacion() {
 
 function KpiCard({ label, value, icon: Icon, gradient }: any) {
   return (
-    <Card className="shadow-card overflow-hidden relative group hover:shadow-elegant transition-smooth">
-      <CardContent className="p-5">
+    <Card className="card-premium overflow-hidden relative group">
+      <div aria-hidden className={cn("absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-10 blur-2xl group-hover:opacity-20 transition-smooth", gradient)} />
+      <CardContent className="p-5 relative">
         <div className="flex items-start justify-between">
-          <div className="space-y-1 min-w-0">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{label}</p>
-            <p className="text-xl lg:text-2xl font-bold tracking-tight truncate">{value}</p>
+          <div className="space-y-1.5 min-w-0">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
+            <p className="font-display text-xl lg:text-2xl font-bold tracking-tight truncate">{value}</p>
           </div>
-          <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-md shrink-0", gradient)}>
+          <div className={cn("h-11 w-11 rounded-xl flex items-center justify-center text-white shadow-lg shrink-0 group-hover:scale-110 transition-spring", gradient)}>
             <Icon className="h-5 w-5" />
           </div>
         </div>
