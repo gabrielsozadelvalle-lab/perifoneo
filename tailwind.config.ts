@@ -76,10 +76,17 @@ export default {
         "gradient-success": "var(--gradient-success)",
         "gradient-sidebar": "var(--gradient-sidebar)",
         "gradient-subtle": "var(--gradient-subtle)",
+        "gradient-card": "var(--gradient-card)",
+        "gradient-hero": "var(--gradient-hero)",
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Sora", "Inter", "system-ui", "sans-serif"],
       },
       boxShadow: {
         card: "var(--shadow-card)",
         elegant: "var(--shadow-lg)",
+        elevated: "var(--shadow-elevated)",
         glow: "var(--shadow-glow)",
       },
       borderRadius: {
