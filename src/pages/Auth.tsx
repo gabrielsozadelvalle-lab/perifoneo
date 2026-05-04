@@ -38,20 +38,27 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2">
-          <div className="flex flex-col items-center justify-center gap-2 mb-2">
-            <div className="p-3 rounded-full bg-primary shadow-sm">
-              <Megaphone className="h-7 w-7 text-primary-foreground" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4 relative overflow-hidden">
+      <div aria-hidden className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      <div aria-hidden className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-accent/15 blur-3xl" />
+      <Card className="w-full max-w-md card-premium shadow-elevated relative">
+        <CardHeader className="text-center space-y-3 pt-8">
+          <div className="flex flex-col items-center justify-center gap-3 mb-1">
+            <div className="relative h-16 w-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow ring-1 ring-accent/30">
+              <Megaphone className="h-8 w-8 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold">Perifoneo</CardTitle>
+            <div>
+              <CardTitle className="font-display text-2xl font-bold tracking-tight">Perifoneo</CardTitle>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mt-1">
+                ERP Suite
+              </p>
+            </div>
           </div>
-          <CardDescription>
+          <CardDescription className="text-sm">
             {isLogin ? "Iniciá sesión para continuar" : "Creá tu cuenta"}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
@@ -76,16 +83,19 @@ export default function Auth() {
                 minLength={6}
               />
             </div>
-            <Button type="submit" className="w-full gap-2" disabled={loading}>
-              <Megaphone className="h-4 w-4" />
+            <Button
+              type="submit"
+              className="w-full gap-2 bg-gradient-primary hover:opacity-90 shadow-elegant h-11"
+              disabled={loading}
+            >
               {loading ? "Cargando..." : isLogin ? "Iniciar sesión" : "Crear cuenta"}
             </Button>
           </form>
-          <div className="mt-4 text-center">
+          <div className="mt-5 text-center">
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-muted-foreground hover:text-primary underline"
+              className="text-sm text-muted-foreground hover:text-primary transition-smooth"
             >
               {isLogin ? "¿No tenés cuenta? Registrate" : "¿Ya tenés cuenta? Iniciá sesión"}
             </button>
