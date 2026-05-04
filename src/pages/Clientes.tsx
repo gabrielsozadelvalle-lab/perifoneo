@@ -51,9 +51,17 @@ export default function Clientes() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Clientes</h1>
-        <Button onClick={() => { setSelected(null); setFormOpen(true); }} className="w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-1" /> Nuevo Cliente
+        <div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">Clientes</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {clientes?.length ?? 0} {(clientes?.length ?? 0) === 1 ? "cliente registrado" : "clientes registrados"}
+          </p>
+        </div>
+        <Button
+          onClick={() => { setSelected(null); setFormOpen(true); }}
+          className="w-full sm:w-auto bg-gradient-primary hover:opacity-90 shadow-elegant gap-2"
+        >
+          <Plus className="h-4 w-4" /> Nuevo Cliente
         </Button>
       </div>
 
