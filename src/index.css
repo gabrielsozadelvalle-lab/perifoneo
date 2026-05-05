@@ -41,15 +41,15 @@
 
     --radius: 0.85rem;
 
-    /* Sidebar — azul medianoche con halo dorado */
-    --sidebar-background: 222 60% 8%;
-    --sidebar-foreground: 220 14% 92%;
-    --sidebar-primary: 38 92% 55%;
-    --sidebar-primary-foreground: 222 60% 8%;
-    --sidebar-accent: 222 50% 14%;
+    /* Sidebar — claro minimalista con activo violeta tipo pill */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 30% 25%;
+    --sidebar-primary: 252 87% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 252 87% 62%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 222 50% 16%;
-    --sidebar-ring: 38 92% 55%;
+    --sidebar-border: 220 16% 92%;
+    --sidebar-ring: 252 87% 62%;
 
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
@@ -66,7 +66,7 @@
     --gradient-primary: linear-gradient(135deg, hsl(222 65% 22%) 0%, hsl(222 70% 38%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(38 92% 52%) 0%, hsl(43 96% 60%) 100%);
     --gradient-success: linear-gradient(135deg, hsl(152 60% 40%) 0%, hsl(160 65% 48%) 100%);
-    --gradient-sidebar: linear-gradient(180deg, hsl(222 60% 9%) 0%, hsl(222 65% 5%) 100%);
+    --gradient-sidebar: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 30% 99%) 100%);
     --gradient-subtle: radial-gradient(1200px 600px at 0% 0%, hsl(222 65% 96%) 0%, transparent 60%),
                        radial-gradient(1000px 500px at 100% 0%, hsl(38 92% 96%) 0%, transparent 55%),
                        linear-gradient(180deg, hsl(220 30% 99%), hsl(220 30% 97%));
