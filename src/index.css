@@ -41,15 +41,15 @@
 
     --radius: 0.85rem;
 
-    /* Sidebar — azul medianoche con halo dorado */
-    --sidebar-background: 222 60% 8%;
-    --sidebar-foreground: 220 14% 92%;
-    --sidebar-primary: 38 92% 55%;
-    --sidebar-primary-foreground: 222 60% 8%;
-    --sidebar-accent: 222 50% 14%;
+    /* Sidebar — claro minimalista con activo violeta tipo pill */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 30% 25%;
+    --sidebar-primary: 252 87% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 252 87% 62%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 222 50% 16%;
-    --sidebar-ring: 38 92% 55%;
+    --sidebar-border: 220 16% 92%;
+    --sidebar-ring: 252 87% 62%;
 
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
